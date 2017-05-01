@@ -7,6 +7,8 @@ var clean = require('gulp-clean');
 var concat = require('gulp-concat');
 var reactify = require('reactify');
 var browserify = require('browserify');
+var connect = require('gulp-connect');
+var open = require('gulp-open');
 
 var config = {
     vendorJs: [
@@ -15,7 +17,8 @@ var config = {
     ],
     vendorCss: ['node_modules/bootstrap/dist/css/bootstrap.min.css'],
     siteJs: ['src/js/**/*.js'],
-    siteCss: ['src/css/**/*.css']
+    siteCss: ['src/css/**/*.css'],
+    html: ['src/**/*.html']
 };
 
 gulp.task('clean', function () {
@@ -50,4 +53,23 @@ gulp.task('sitecss', function () {
         .pipe(gulp.dest('dist/css'));
 });
 
-gulp.task('default', ['vendorjs', 'vendorcss', 'sitejs', 'sitecss']);
+gulp.task('html', function () {
+    return gulp.src(config.html)
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('open', ['connect'], function () {
+    return gulp.src('dist/index/html')
+        .pipe(open('', { url: 'http://localhost:6969' }));
+});
+
+gulp.task('connect', function () {
+    return connect.server({
+        root: ['dist'],
+        port: 6969,
+        base: 'http://localhost',
+        livereload: true
+    });
+});
+
+gulp.task('default', ['vendorjs', 'vendorcss', 'sitejs', 'sitecss', 'html', 'connect']);
