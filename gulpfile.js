@@ -9,6 +9,7 @@ var reactify = require('reactify');
 var browserify = require('browserify');
 var connect = require('gulp-connect');
 var open = require('gulp-open');
+var source = require('vinyl-source-stream');
 
 var config = {
     vendorJs: [
@@ -40,9 +41,11 @@ gulp.task('vendorcss', function () {
 });
 
 gulp.task('sitejs', function () {
-    return gulp.src(config.siteJs)
-        .pipe(concat('site.js'))
-        .pipe(uglify())
+    browserify('./src/js/main.js')
+        .transform(reactify)
+        .bundle()
+        .on('error', console.error.bind(console))
+        .pipe(source('site.js'))
         .pipe(gulp.dest('dist/js'));
 });
 
